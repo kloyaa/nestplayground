@@ -36,10 +36,9 @@ npm install --save-dev @pact-foundation/pact
 project/
 ├── pacts/                      # Generated pact files
 ├── src/
-│   ├── consumer/
-│   │   └── users.consumer.pact.spec.ts
-│   └── provider/
-│       └── users.provider.pact.spec.ts
+│   ├── test/
+│       └── name.consumer.pact.spec.ts
+│       └── name.provider.pact.spec.ts
 ├── package.json
 └── README.md
 ```
@@ -49,7 +48,7 @@ project/
 ### Consumer Tests
 
 ```bash
-yarn test -- name.consumer.pact
+yarn test -- name.consumer.pact (eg. users.consumer.pact)
 ```
 
 This generates a pact file at `pacts/MyConsumer-MyProvider.json`.
