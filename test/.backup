@@ -1,0 +1,67 @@
+import { PactV3, MatchersV3 } from '@pact-foundation/pact';
+import axios, { AxiosPromise } from 'axios';
+import * as path from 'path';
+
+// Create a 'pact' between the two applications in the integration we are testing
+const provider = new PactV3({
+    dir: path.resolve(process.cwd(), 'pacts'),
+    consumer: 'MyConsumer',
+    provider: 'MyProvider',
+});
+
+const dogExample = { dog: 1 };
+const EXPECTED_BODY = MatchersV3.eachLike(dogExample);
+
+describe('GET /dogs', () => {
+    it('returns an HTTP 200 and a list of dogs', () => {
+        // Arrange: Setup our expected interactions
+        //
+        // We use Pact to mock out the backend API
+        provider
+            .given('I have a list of dogs')
+            .uponReceiving('a request for all dogs with the builder pattern')
+            .withRequest({
+                method: 'GET',
+                path: '/dogs',
+                query: { from: 'today' },
+                headers: { Accept: 'application/json' },
+            })
+            .willRespondWith({
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+                body: EXPECTED_BODY,
+            });
+
+        return provider.executeTest(async (mockserver) => {
+            const response = await axios.get(`${mockserver.url}/dogs?from=today`, { headers: { Accept: 'application/json' } });
+            expect(response.status).toBe(200);
+        });
+    });
+});
+
+describe('GET /dogs', () => {
+    it('returns an HTTP 200 and a list of dogs', () => {
+        // Arrange: Setup our expected interactions
+        //
+        // We use Pact to mock out the backend API
+        provider
+            .given('I have a list of dogs')
+            .uponReceiving('a request for all dogs with the builder pattern')
+            .withRequest({
+                method: 'GET',
+                path: '/dogs',
+                query: { from: 'today' },
+                headers: { Accept: 'application/json' },
+            })
+            .willRespondWith({
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+                body: EXPECTED_BODY,
+            });
+
+        return provider.executeTest(async (mockserver) => {
+            const response = await axios.get(`${mockserver.url}/dogs?from=today`, { headers: { Accept: 'application/json' } });
+            expect(response.status).toBe(200);
+        });
+    });
+});

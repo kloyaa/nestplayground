@@ -1,0 +1,194 @@
+// src/users/test/users.consumer.pact.spec.ts
+import { Pact, Matchers, PactV3 } from '@pact-foundation/pact';
+import axios from 'axios';
+import * as path from 'path';
+
+const { like, uuid, string } = Matchers;
+
+describe('Users Consumer', () => {
+    let baseUrl: string;
+
+    const provider = new PactV3({
+        dir: path.resolve(process.cwd(), 'pacts'),
+        consumer: 'MyConsumer',
+        provider: 'MyProvider',
+        cors: true,
+        logLevel: 'debug',
+    });
+
+    // Define the Pact mock server
+    beforeAll(async () => {
+        provider = new PactV3({
+            consumer: 'users-api-consumer',
+            provider: 'users-api-provider',
+            log: path.resolve(process.cwd(), 'logs', 'pact.log'),
+            logLevel: 'info', // Changed to info for more detailed logs
+            dir: path.resolve(process.cwd(), 'pacts'),
+            cors: true,
+            pactfileWriteMode: 'overwrite', // Add this to ensure fresh pact files
+            timeout: 10000,
+        });
+
+        await provider.setup();
+        baseUrl = provider.mockService.baseUrl;
+        console.log(`Mock server running at ${baseUrl}`);
+    });
+
+    // Clean up after each test
+    afterEach(async () => {
+        await provider.verify();
+    });
+
+    // Clean up after tests
+    afterAll(async () => {
+        await provider.finalize();
+    });
+
+    describe('Create User', () => {
+        const createUserRequest = {
+            username: 'testuser',
+            email: 'test@example.com',
+            password: 'password123',
+        };
+
+        const createUserResponse = {
+            id: uuid('123e4567-e89b-12d3-a456-426614174000'),
+            username: 'testuser',
+            email: 'test@example.com',
+            createdAt: string('2023-01-01T00:00:00.000Z'),
+            updatedAt: string('2023-01-01T00:00:00.000Z'),
+        };
+
+        beforeEach(() => {
+            return provider.addInteraction({
+                state: 'no existing user',
+                uponReceiving: 'a request to create a new user',
+                withRequest: {
+                    method: 'POST',
+                    path: '/users',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: createUserRequest,
+                },
+                willRespondWith: {
+                    status: 201,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: like(createUserResponse),
+                },
+            });
+        });
+
+        it('creates a user successfully', async () => {
+            const response = await axios.post(`${baseUrl}/users`, createUserRequest, {
+                headers: { 'Content-Type': 'application/json' },
+            },);
+
+            expect(response.status).toBe(201);
+            expect(response.data).toHaveProperty('id');
+            expect(response.data.username).toBe('testuser');
+            expect(response.data.email).toBe('test@example.com');
+        });
+    });
+
+    describe('Get User by ID', () => {
+        const userId = '123e4567-e89b-12d3-a456-426614174000';
+        const getUserResponse = {
+            id: userId,
+            username: 'testuser',
+            email: 'test@example.com',
+            createdAt: string('2023-01-01T00:00:00.000Z'),
+            updatedAt: string('2023-01-01T00:00:00.000Z'),
+        };
+
+        // Setup a separate interaction for this test
+        beforeEach(() => {
+            return provider.addInteraction({
+                state: 'a user exists with id ' + userId,
+                uponReceiving: 'a request to get a user by id',
+                withRequest: {
+                    method: 'GET',
+                    path: `/users/${userId}`,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
+                willRespondWith: {
+                    status: 200,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: like(getUserResponse),
+                },
+            });
+        });
+
+        it('returns the user by id', async () => {
+            const response = await axios.get(`${baseUrl}/users/${userId}`, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            expect(response.status).toBe(200);
+        })
+        // it('returns the user by id', async () => {
+        //     try {
+        //         const response = await axios.get(`${baseUrl}/users/${userId}`);
+
+        //         // expect(response.status).toBe(200);
+        //         // expect(response.data).toHaveProperty('id', userId);
+        //         // expect(response.data.username).toBe('testuser');
+        //         // expect(response.data.email).toBe('test@example.com');
+        //     } catch (error) {
+        //         console.error('Error in get user by username test:', error.message, error.response?.data);
+        //         throw error;
+        //     }
+        // });
+    });
+
+    // describe('Get User by Username', () => {
+    //     const username = 'testuser';
+    //     const getUserResponse = {
+    //         id: uuid('123e4567-e89b-12d3-a456-426614174000'),
+    //         username: username,
+    //         email: 'test@example.com',
+    //         createdAt: string('2023-01-01T00:00:00.000Z'),
+    //         updatedAt: string('2023-01-01T00:00:00.000Z'),
+    //     };
+
+    //     // Setup a separate interaction for this test
+    //     beforeEach(() => {
+    //         return provider.addInteraction({
+    //             state: 'a user exists with username ' + username,
+    //             uponReceiving: 'a request to get a user by username',
+    //             withRequest: {
+    //                 method: 'GET',
+    //                 path: '/users/username/' + username,
+    //                 // No body needed for GET request
+    //             },
+    //             willRespondWith: {
+    //                 status: 200,
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //                 body: like(getUserResponse),
+    //             },
+    //         });
+    //     });
+
+    //     it('returns the user by username', async () => {
+    //         try {
+    //             const response = await axios.get(`${baseUrl}/users/username/${username}`);
+
+    //             expect(response.status).toBe(200);
+    //             expect(response.data).toHaveProperty('id');
+    //             expect(response.data.username).toBe('testuser');
+    //             expect(response.data.email).toBe('test@example.com');
+    //         } catch (error) {
+    //             console.error('Error in get user by username test:', error.message, error.response?.data);
+    //             throw error;
+    //         }
+    //     });
+    // });
+});

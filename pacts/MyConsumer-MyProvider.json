@@ -1,0 +1,98 @@
+{
+  "consumer": {
+    "name": "MyConsumer"
+  },
+  "interactions": [
+    {
+      "description": "a request to create a new user",
+      "providerState": "no existing user",
+      "request": {
+        "body": {
+          "email": "test@example.com",
+          "password": "password123",
+          "username": "testuser"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/users"
+      },
+      "response": {
+        "body": {
+          "createdAt": "2023-01-01T00:00:00.000Z",
+          "email": "test@example.com",
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "updatedAt": "2023-01-01T00:00:00.000Z",
+          "username": "testuser"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.createdAt": {
+            "match": "type"
+          },
+          "$.body.id": {
+            "match": "regex",
+            "regex": "^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$"
+          },
+          "$.body.updatedAt": {
+            "match": "type"
+          }
+        },
+        "status": 201
+      }
+    },
+    {
+      "description": "a request to get a user by id",
+      "providerState": "a user exists with id 123e4567-e89b-12d3-a456-426614174000",
+      "request": {
+        "headers": {
+          "Accept": "application/json"
+        },
+        "method": "GET",
+        "path": "/users/123e4567-e89b-12d3-a456-426614174000"
+      },
+      "response": {
+        "body": {
+          "createdAt": "2023-01-01T00:00:00.000Z",
+          "email": "test@example.com",
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "updatedAt": "2023-01-01T00:00:00.000Z",
+          "username": "testuser"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "$.body.createdAt": {
+            "match": "type"
+          },
+          "$.body.updatedAt": {
+            "match": "type"
+          }
+        },
+        "status": 200
+      }
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "15.0.1"
+    },
+    "pactRust": {
+      "ffi": "0.4.22",
+      "models": "1.2.3"
+    },
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  },
+  "provider": {
+    "name": "MyProvider"
+  }
+}
