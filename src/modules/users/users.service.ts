@@ -41,18 +41,18 @@ export class UsersService {
     await this.userRepository.save(user);
 
     // This is the correct response format based on the pact generated contract
-    // const { password: _, salt: __, ...userResponse } = user;
-    // return userResponse;
+    const { password: _, salt: __, ...userResponse } = user;
+    return userResponse;
 
     // BREAKING CHANGE: This should return error becasue the defined contract does not match the body
-    const { password: _, salt: __, ...userDetails } = user;
-    return {
-      userId: userDetails.id, // Changed from 'id' to 'userId'
-      userName: userDetails.username, // Changed from 'username' to 'userName'
-      email: userDetails.email,
-      createdOn: userDetails.createdAt, // Changed from 'createdAt' to 'createdOn'
-      updatedOn: userDetails.updatedAt, // Changed from 'updatedAt' to 'updatedOn'
-    };
+    // const { password: _, salt: __, ...userDetails } = user;
+    // return {
+    //   userId: userDetails.id, // Changed from 'id' to 'userId'
+    //   userName: userDetails.username, // Changed from 'username' to 'userName'
+    //   email: userDetails.email,
+    //   createdOn: userDetails.createdAt, // Changed from 'createdAt' to 'createdOn'
+    //   updatedOn: userDetails.updatedAt, // Changed from 'updatedAt' to 'updatedOn'
+    // };
   }
 
   async getUserById(id: string): Promise<UserResponseDto> {

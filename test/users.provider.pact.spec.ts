@@ -1,7 +1,7 @@
 import { Verifier } from '@pact-foundation/pact';
 import * as path from 'path';
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, INestApplication, ValidationPipe } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '@app/database/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -29,7 +29,17 @@ describe('Users Provider Pact Verification', () => {
         }).compile();
 
         app = moduleFixture.createNestApplication();
-        app.useGlobalPipes(new ValidationPipe({ transform: true }));
+        app.useGlobalPipes(
+            new ValidationPipe({
+                transform: true,
+                // For debugging only - log validation errors
+                exceptionFactory: (errors) => {
+                    console.log('Validation errors:', JSON.stringify(errors, null, 2));
+                    return new BadRequestException(errors);
+                }
+            })
+        );
+
         await app.init();
 
         // Get the REAL repository for test state setup
