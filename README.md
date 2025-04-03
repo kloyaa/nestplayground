@@ -10,9 +10,8 @@ Here's how to deliberately break the contract and observe the Pact verification 
 <h2>Step 2: Introduce Breaking Changes</h2>
 <p>Now, introduce one of the breaking changes I provided above:</p>
 <b>Breaking Change Option 1: Change Response Structure</b>
+<p>Modify your UsersService.createUser method to return fields with different names:</p>
 <pre>
-  Modify your UsersService.createUser method to return fields with different names:
-
   Change id to userId
   Change username to userName
   Change createdAt to createdOn
