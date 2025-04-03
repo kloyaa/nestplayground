@@ -44,26 +44,12 @@ project/
 └── README.md
 ```
 
-### NPM Scripts
-
-Add these to your `package.json`:
-
-```json
-{
-  "scripts": {
-    "test:consumer:pact": "jest users.consumer.pact.spec.ts --runInBand",
-    "test:provider:pact": "jest users.provider.pact.spec.ts --runInBand",
-    "pact:publish": "node ./scripts/publish-pacts.js"
-  }
-}
-```
-
 ## Running Tests
 
 ### Consumer Tests
 
 ```bash
-npm run test:consumer:pact
+yarn test -- name.consumer.pact
 ```
 
 This generates a pact file at `pacts/MyConsumer-MyProvider.json`.
@@ -71,7 +57,7 @@ This generates a pact file at `pacts/MyConsumer-MyProvider.json`.
 ### Provider Tests
 
 ```bash
-npm run test:provider:pact
+yarn test -- name.provider.pact
 ```
 
 This verifies that your provider fulfills the consumer contract.
@@ -162,13 +148,6 @@ return {
 };
 ```
 
-**Error Message:**
-```
-ERROR: No such key: "id" in {}
-expected "id" with value matching /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-actual: missing key "id" (but found "userId")
-```
-
 ### 2. New Required Fields
 
 **Breaking Change:**
@@ -181,15 +160,6 @@ export class CreateUserDto {
     acceptTerms: boolean; // New required field
 }
 ```
-
-**Error Message:**
-```
-ERROR: Request failed with status 400 Bad Request
-Expected status: 201
-Received status: 400
-Message: Bad Request Exception: acceptTerms must not be empty
-```
-
 ### Resolving Breaking Changes
 
 1. **Revert the Change**: Make your code conform to the existing contract
