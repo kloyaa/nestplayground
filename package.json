@@ -27,7 +27,9 @@
     "pact:provider:verify": "jest --no-coverage --ci --testRegex=\"(/__tests__/.*|(.|/)provider/.*\\.pact\\.spec\\.(js|ts))$\"",
     "pact:consumer:verify": "jest --no-coverage --ci --testRegex=\"(/__tests__/.*|(.|/)consumer/.*\\.pact\\.spec\\.(js|ts))$\"",
     "pact:publish": "pact-broker publish ./pacts --consumer-app-version $(git rev-parse --short HEAD) --broker-base-url http://localhost:9292",
-    "pact:can-i-deploy": "pact-broker can-i-deploy --pacticipant HealthConsumerService --version $(git rev-parse --short HEAD) --broker-base-url http://localhost:9292"
+    "pact:can-i-deploy": "pact-broker can-i-deploy --pacticipant HealthConsumerService --version $(git rev-parse --short HEAD) --broker-base-url http://localhost:9292",
+    "pact:verify": "yarn pact:consumer:verify && yarn pact:provider:verify",
+    "prepare": "husky"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -65,7 +67,9 @@
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^15.14.0",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
+    "lint-staged": "^15.5.0",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",
     "ts-jest": "^29.2.5",
@@ -96,6 +100,11 @@
       "^@shared/(.*)$": "<rootDir>/src/shared/$1",
       "^@modules/(.*)$": "<rootDir>/src/modules/$1"
     }
+  },
+  "lint-staged": {
+    "**/*.{js,ts}": [
+      "yarn pact:verify"
+    ]
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
