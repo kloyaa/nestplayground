@@ -1,0 +1,41 @@
+name: Pact Flow
+
+on:
+  pull_request:
+    types:
+      - edited
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  pact-flow:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+
+      - name: Install yarn dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run Pact Consumer Tests
+        run: yarn test:pact
+
+      - name: Publish Pacts
+        run: yarn pact:consumer:publish
+
+      - name: Verify Pacts
+        run: yarn pact:provider:verify
+
+      - name: Can I Deploy?
+        run: yarn pact:can-i-deploy

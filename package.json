@@ -22,7 +22,12 @@
     "migration:run": "npm run typeorm:migration migration:run",
     "migration:revert": "npm run typeorm:migration migration:revert",
     "migration:show": "npm run typeorm:migration migration:show",
-    "migration:create": "typeorm-ts-node-commonjs migration:create ./src/database/migrations/$npm_config_name"
+    "migration:create": "typeorm-ts-node-commonjs migration:create ./src/database/migrations/$npm_config_name",
+    "test:pact": "jest --testRegex=\".*\\.pact\\.spec\\.ts$\"",
+    "pact:provider:verify": "jest --no-coverage --ci --testRegex=\"(/__tests__/.*|(.|/)provider/.*\\.pact\\.spec\\.(js|ts))$\"",
+    "pact:consumer:verify": "jest --no-coverage --ci --testRegex=\"(/__tests__/.*|(.|/)consumer/.*\\.pact\\.spec\\.(js|ts))$\"",
+    "pact:consumer:publish": "pact-broker publish ./pacts --consumer-app-version $(git rev-parse --short HEAD) --broker-base-url http://localhost:9292",
+    "pact:can-i-deploy": "pact-broker can-i-deploy --pacticipant ConsumerService --version $(git rev-parse --short HEAD) --broker-base-url http://localhost:9292"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -32,6 +37,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.0",
     "@pact-foundation/pact": "^15.0.1",
+    "@pact-foundation/pact-node": "^10.18.0",
     "add": "^2.0.6",
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",

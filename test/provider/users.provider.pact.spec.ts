@@ -86,15 +86,27 @@ describe('Users Provider Pact Verification', () => {
             }
         };
 
-        // Run the Pact verification against our REAL API
+        // Run the Pact verification against our REAL API.
+        const isProduction = process.env.NODE_ENV === 'production';
+        const localPort = process.env.PORT || 3432;
+        const localHost = `http://localhost:${localPort}`;
+        const localPactBrokerUrl = `http://localhost:9292`;
+
         const verifierOptions = {
-            provider: 'MyProvider',
-            providerBaseUrl: 'http://localhost:3001', // Real server URL
-            pactUrls: [path.resolve(process.cwd(), 'pacts/MyConsumer-MyProvider.json')],
-            publishVerificationResult: process.env.NODE_ENV === 'production',
+            provider: 'ProviderService',
+            providerBaseUrl: isProduction
+                ? 'https://myprovider.com'
+                : localHost,
+            pactBrokerUrl: isProduction
+                ? localPactBrokerUrl
+                : localPactBrokerUrl,
+            pactUrls: [path.resolve(process.cwd(), 'pacts/ConsumerService-ProviderService.json')],
+            publishVerificationResult: true,
             providerVersion: process.env.GIT_COMMIT || '1.0.0',
             stateHandlers: stateHandlers,
         };
+
+        console.log(verifierOptions)
 
         return new Verifier(verifierOptions).verifyProvider();
     });

@@ -1,16 +1,14 @@
-import { PactV3, MatchersV3 } from '@pact-foundation/pact';
+import { PactV3, MatchersV3, SpecificationVersion } from '@pact-foundation/pact';
 import { like, string, uuid } from '@pact-foundation/pact/src/dsl/matchers';
 import axios, { AxiosPromise } from 'axios';
 import * as path from 'path';
 
 // Create a 'pact' between the two applications in the integration we are testing
 const provider = new PactV3({
+    consumer: 'ConsumerService',
+    provider: 'ProviderService',
     dir: path.resolve(process.cwd(), 'pacts'),
-    consumer: 'MyConsumer',
-    provider: 'MyProvider',
-    cors: true,
-    logLevel: 'debug',
-    spec: 3,
+    spec: SpecificationVersion.SPECIFICATION_VERSION_V3
 });
 
 
