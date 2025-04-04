@@ -35,4 +35,24 @@ describe('GET /', () => {
             expect(response.status).toBe(201);
         });
     });
+
+    it('[v1] get application health statuses', () => {
+        provider
+            .given('requesting a health status of application')
+            .uponReceiving('a request to receive application status')
+            .willRespondWith({
+                status: 200,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: like(getHealthStatusResponse),
+            });
+
+        return provider.executeTest(async (mockserver) => {
+            const response = await axios.get(`${mockserver.url}/`, {
+                headers: { 'Content-Type': 'application/json' },
+            },);
+            expect(response.status).toBe(200);
+        });
+    });
 });
