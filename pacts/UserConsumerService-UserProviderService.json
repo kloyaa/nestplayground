@@ -1,6 +1,6 @@
 {
   "consumer": {
-    "name": "ConsumerService"
+    "name": "UserConsumerService"
   },
   "interactions": [
     {
@@ -139,6 +139,6 @@
     }
   },
   "provider": {
-    "name": "ProviderService"
+    "name": "UserProviderService"
   }
 }
