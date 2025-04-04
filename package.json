@@ -28,7 +28,7 @@
     "pact:consumer:verify": "yarn test --testRegex=\"test/consumer/.*\\.consumer\\.pact\\.spec\\.(js|ts)$\"",
     "pact:publish": "find ./pacts -name \"*.json\" -type f | xargs -I{} pact-broker publish {} --consumer-app-version $(git rev-parse --short HEAD) --broker-base-url http://localhost:9292",
     "pact:can-i-deploy": "pact-broker can-i-deploy --pacticipant HealthConsumerService --version $(git rev-parse --short HEAD) --broker-base-url http://localhost:9292",
-    "pact:verify": "yarn pact:consumer:verify && yarn pact:publish",
+    "pact:verify": "yarn pact:consumer:verify && yarn pact:publish && yarn pact:provider:verify",
     "prepare": "husky"
   },
   "dependencies": {

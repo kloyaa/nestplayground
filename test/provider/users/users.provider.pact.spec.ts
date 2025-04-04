@@ -119,7 +119,7 @@ describe('Users Provider Pact Verification', () => {
       pactUrls: [
         path.resolve(
           process.cwd(),
-          'pacts/UserConsumerService-UserProviderService.json',
+          'pacts/users/UserConsumerService-UserProviderService.json',
         ),
       ],
       publishVerificationResult: true,
