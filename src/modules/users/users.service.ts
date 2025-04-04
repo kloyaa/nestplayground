@@ -1,5 +1,8 @@
-
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,9 +15,11 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
+  ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto | any> {
+  async createUser(
+    createUserDto: CreateUserDto,
+  ): Promise<UserResponseDto | any> {
     const { username, email, password } = createUserDto;
 
     // Check if username or email already exists
@@ -79,4 +84,3 @@ export class UsersService {
     return userResponse;
   }
 }
-
