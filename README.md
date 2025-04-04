@@ -359,4 +359,4 @@ jobs:
 
 Contract testing with Pact ensures your microservices remain compatible as they evolve independently. By catching breaking changes early, you maintain reliability across your distributed system without slowing down development.
 
-For more information, visit the [Pact documentation](https://docs.pact.io/).
+For more information, visit the [Pact documentation](https://docs.pact.io/)
