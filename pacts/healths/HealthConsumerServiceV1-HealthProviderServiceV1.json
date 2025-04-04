@@ -1,0 +1,61 @@
+{
+  "consumer": {
+    "name": "HealthConsumerServiceV1"
+  },
+  "interactions": [
+    {
+      "description": "a request to receive application status",
+      "providerStates": [
+        {
+          "name": "requesting a health status of application"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "GET",
+        "path": "/v1"
+      },
+      "response": {
+        "body": {
+          "pgStatus": "ok",
+          "redisStatus": "ok"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {},
+          "status": {}
+        },
+        "status": 200
+      }
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "15.0.1"
+    },
+    "pactRust": {
+      "ffi": "0.4.22",
+      "models": "1.2.3"
+    },
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  },
+  "provider": {
+    "name": "HealthProviderServiceV1"
+  }
+}
