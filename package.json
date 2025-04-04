@@ -25,8 +25,8 @@
     "migration:create": "typeorm-ts-node-commonjs migration:create ./src/database/migrations/$npm_config_name",
     "test:pact": "jest --testRegex=\".*\\.pact\\.spec\\.ts$\"",
     "pact:provider:verify": "jest --no-coverage --ci --testRegex=\"test/provider/.*\\.pact\\.spec\\.(js|ts)$\"",
-    "pact:consumer:verify": "jest --no-coverage --ci --testRegex=\"test/consumer/.*\\.consumer\\.pact\\.spec\\.(js|ts)$\"",
-    "pact:publish": "pact-broker publish ./pacts --consumer-app-version $(git rev-parse --short HEAD) --broker-base-url http://localhost:9292",
+    "pact:consumer:verify": "yarn test --testRegex=\"test/consumer/.*\\.consumer\\.pact\\.spec\\.(js|ts)$\"",
+    "pact:publish": "find ./pacts -name \"*.json\" -type f | xargs -I{} pact-broker publish {} --consumer-app-version $(git rev-parse --short HEAD) --broker-base-url http://localhost:9292",
     "pact:can-i-deploy": "pact-broker can-i-deploy --pacticipant HealthConsumerService --version $(git rev-parse --short HEAD) --broker-base-url http://localhost:9292",
     "pact:verify": "yarn pact:consumer:verify && yarn pact:publish",
     "prepare": "husky"

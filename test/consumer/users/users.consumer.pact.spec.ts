@@ -6,7 +6,7 @@ import * as path from 'path';
 const provider = new PactV3({
     consumer: 'UserConsumerService',
     provider: 'UserProviderService',
-    dir: path.resolve(process.cwd(), 'pacts'),
+    dir: path.resolve(process.cwd(), 'pacts/users'),
     spec: SpecificationVersion.SPECIFICATION_VERSION_V3
 });
 

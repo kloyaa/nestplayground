@@ -1,6 +1,6 @@
 {
   "consumer": {
-    "name": "HealthConsumerService"
+    "name": "HealthConsumerServiceV1"
   },
   "interactions": [
     {
@@ -11,13 +11,16 @@
         }
       ],
       "request": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
         "method": "GET",
-        "path": "/"
+        "path": "/v1"
       },
       "response": {
         "body": {
-          "pg_status": "ok",
-          "redis_status": "ok"
+          "pgStatus": "ok",
+          "redisStatus": "ok"
         },
         "headers": {
           "Content-Type": "application/json"
@@ -53,6 +56,6 @@
     }
   },
   "provider": {
-    "name": "HealthProviderService"
+    "name": "HealthProviderServiceV1"
   }
 }
