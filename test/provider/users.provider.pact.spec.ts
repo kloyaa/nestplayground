@@ -1,4 +1,4 @@
-import { Verifier } from '@pact-foundation/pact';
+import { MessageStateHandlers, Verifier, VerifierOptions } from '@pact-foundation/pact';
 import * as path from 'path';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, INestApplication, ValidationPipe } from '@nestjs/common';
@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { UsersModule } from '@app/modules/users/users.module';
+import { StateHandlers } from '@pact-foundation/pact/src/dsl/verifier/proxy/types';
 
 describe('Users Provider Pact Verification', () => {
     let app: INestApplication;
@@ -56,12 +57,20 @@ describe('Users Provider Pact Verification', () => {
 
     it('validates the consumer contract', async () => {
         // Setup state handlers that actually modify the database
-        const stateHandlers = {
+        const stateHandlers: StateHandlers & MessageStateHandlers = {
             'no existing user': async () => {
                 // Clear any existing users to ensure we're in a clean state
                 await userRepository.clear();
                 return Promise.resolve('Database cleared, no user exists');
             },
+            // "is authenticated": async () => {
+            //     token = "1234"
+            //     Promise.resolve(`Valid bearer token generated`)
+            // },
+            // "is not authenticated": async () => {
+            //     token = ""
+            //     Promise.resolve(`Expired bearer token generated`)
+            // },
             [`a user exists with id ${testUserId}`]: async () => {
                 // Clear any existing data first
                 await userRepository.clear();
@@ -91,23 +100,34 @@ describe('Users Provider Pact Verification', () => {
         const localPort = process.env.PORT || 3432;
         const localHost = `http://localhost:${localPort}`;
         const localPactBrokerUrl = `http://localhost:9292`;
+        let token
 
-        const verifierOptions = {
-            provider: 'ProviderService',
+        const verifierOptions: VerifierOptions = {
+            provider: 'UserProviderService',
             providerBaseUrl: isProduction
                 ? 'https://myprovider.com'
                 : localHost,
             pactBrokerUrl: isProduction
                 ? localPactBrokerUrl
                 : localPactBrokerUrl,
-            pactUrls: [path.resolve(process.cwd(), 'pacts/ConsumerService-ProviderService.json')],
+            pactUrls: [path.resolve(process.cwd(), 'pacts/UserConsumerService-UserProviderService.json')],
             publishVerificationResult: true,
             providerVersion: process.env.GIT_COMMIT || '1.0.0',
             stateHandlers: stateHandlers,
+            logLevel: "debug",
+            logFile: "pacts/log/provider.log",
+            enablePending: true,
+            beforeEach: async () => {
+                console.log('I run before everything else')
+            },
+            afterEach: async () => {
+                console.log('I run after everything else has finished')
+            },
+            requestFilter: (req, res, next) => {
+                req.headers["Authorization"] = `Bearer: ${token}`
+                next()
+            },
         };
-
-        console.log(verifierOptions)
-
         return new Verifier(verifierOptions).verifyProvider();
     });
 });
